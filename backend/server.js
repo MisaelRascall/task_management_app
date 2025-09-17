@@ -14,7 +14,11 @@
       res.json({ mensaje: '¡Hola desde el backend!' });
     });
 
+    // Importando las rutas de usuarios
+    const usersRoutes = require("./routes/users");
+    app.use("/users", usersRoutes);
+
     // Levantando el servidor
     app.listen(port, () => {
-      console.log(`Servidor Express escuchando en el puerto ${port}`);
+      console.log(`El servidor Express esta corriendo en http://localhost:${port}`);
     });
