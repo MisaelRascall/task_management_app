@@ -17,12 +17,12 @@ router.get("/", async (req, res) => {
 // Obtener un usuario por id
 router.get("/:id", async (req, res) => {
     const userId = parseInt(req.params.id, 10);
-    
+
     // console.log("ID recibido:", req.params.id, " -> convertido a número:", userId);
 
     // Validando si el ID es un número
     if (isNaN(userId)) {
-        return res.status(400).json({error: "ID inválido" });
+        return res.status(400).json({ error: "ID inválido" });
     }
 
     try {
@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
     const { nombre } = req.body;
 
     if (!nombre) {
-        return res.status(400).json({error: "El campo 'nombre' es obligatorio" })
+        return res.status(400).json({ error: "El campo 'nombre' es obligatorio" });
     }
 
     try {
@@ -78,7 +78,7 @@ router.put("/:id", async (req, res) => {
 
     // Valida si nombre tiene algún contenido
     if (!nombre) {
-        return res.status(400).json({error: "El campo 'nombre' es obligatorio" });
+        return res.status(400).json({ error: "El campo 'nombre' es obligatorio" });
     }
 
     try {
@@ -105,10 +105,10 @@ router.delete("/:id", async (req, res) => {
 
     // Muestra el contenido de req.data recomendado solo en modo desarrollo
     // console.log("ID recibido:", req.params.id, " -> convertido a número:", userId);
-    
+
     // Validando si el ID es un número
     if (isNaN(userId)) {
-        return res.status(400).json({error: "ID inválido" })
+        return res.status(400).json({ error: "ID inválido" });
     }
 
     try {
