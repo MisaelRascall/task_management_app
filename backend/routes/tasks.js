@@ -1,13 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const getConnection = require("../config/db");
-const { route } = require("./users");
 
 // Obtener una lista de las tareas con sus detalles
 router.get("/", async (req, res) => {
     try {
         const conn = await getConnection();
-        const [rows] = await conn.query("SELECT * FROM tasks");
+        const [rows] = await conn.query(`
+            SELECT t.id, t.titulo, t.descripcion, t.estado,
+            DATE_FORMAT(t.fecha, '%d-%m-%Y') AS fecha,
+            u.nombre AS responsable
+            FROM tasks t
+            INNER JOIN users u ON t.id_user = u.id`);
         await conn.end();
         res.json(rows);
     } catch (err) {
@@ -28,7 +32,13 @@ router.get("/:id", async (req, res) => {
 
     try {
         const conn = await getConnection();
-        const [rows] = await conn.query("SELECT * FROM tasks WHERE id = ?", [taskId]);
+        const [rows] = await conn.query(`
+            SELECT t.id, t.titulo, t.descripcion, t.estado,
+            DATE_FORMAT(t.fecha, '%d-%m-%Y') AS fecha,
+            u.nombre AS responsable
+            FROM tasks t
+            INNER JOIN users u ON t.id_user = u.id
+            WHERE t.id = ?`, [taskId]);
         await conn.end();
 
         if (rows.length >0) {
@@ -43,24 +53,26 @@ router.get("/:id", async (req, res) => {
 
 // Crear una sola tarea
 router.post("/", async (req, res) => {
-    res.send(req.body);
-
     // console.log("Body recibido:", req.body);
 
-    const { titulo, descripcion, responsable, fecha} = req.body;
+    const { titulo, descripcion, id_user, fecha} = req.body;
 
-    if (!titulo || !descripcion || !responsable || !fecha) {
+    if (!titulo || !descripcion || !id_user || !fecha) {
         return res.status(400).json({ error: "Faltan campos obligatorios"});
     }
+
+    // Transformando el formato de fecha de "DD-MM-YYYY" a "YYYY-MM-DD"
+    const [dia, mes, anio] =fecha.split("-");
+    const fechaSQL = `${anio}-${mes}-${dia}`;
 
     try{
         const conn = await getConnection();
         const [result] = await conn.query(
-            "INSERTR INTO tasks (titulo, descripcion, responsable, fecha) VALUES (?, ?, ?, ?)", [titulo, descripcion, responsable, fecha]
+            "INSERT INTO tasks (titulo, descripcion, id_user, fecha) VALUES (?, ?, ?, ?)", [titulo, descripcion, id_user, fechaSQL]
         );
         await conn.end();
 
-        res.status(201).json({ id: result.insertId, titulo, descripcion, responsable, fecha });
+        res.status(201).json({ id: result.insertId, titulo, descripcion, id_user, fechaSQL });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -69,20 +81,24 @@ router.post("/", async (req, res) => {
 // Actualizar tarea
 router.put("/:id", async (req, res) => {
     const taskId = parseInt(req.params.id, 10);
-    const { titulo, descripcion, responsable, fecha } = req.body;
+    const { titulo, descripcion, id_user, fecha } = req.body;
 
-    if (!titulo || !descripcion || !responsable || !fecha) {
+    if (!titulo || !descripcion || !id_user || !fecha) {
         return res.status(400).json({ error: "Faltan campos obligatorios"});
     }
+
+    // Transformando el formato de fecha de "DD-MM-YYYY" a "YYYY-MM-DD"
+    const [dia, mes, anio] =fecha.split("-");
+    const fechaSQL = `${anio}-${mes}-${dia}`;
 
     try{
         const conn = await getConnection();
         const [result] = await conn.query(
-            "UPDATE tasks SET titulo = ?, descripcion = ?, responsable = ?, fecha = ? WHERE id = ?", [titulo, descripcion, responsable, fecha, taskId]
+            `UPDATE tasks SET titulo = ?, descripcion = ?, id_user = ?, fecha = ? WHERE id = ?`, [titulo, descripcion, id_user, fechaSQL, taskId]
         );
 
         if (result.affectedRows > 0) {
-            res.json({ id: req.params.id, titulo, descripcion, responsable, fecha });
+            res.json({ id: req.params.id, titulo, descripcion, id_user, fecha });
         } else {
             res.status(400).json({ error: "Tarea no encontrada" });
         }
