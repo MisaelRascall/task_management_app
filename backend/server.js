@@ -18,6 +18,10 @@
     const usersRoutes = require("./routes/users");
     app.use("/users", usersRoutes);
 
+    // Importando las rutas de las tareas
+    const tasksRoutes = require("./routes/tasks");
+    app.use("/tasks", tasksRoutes);
+
     // Levantando el servidor
     app.listen(port, () => {
       console.log(`El servidor Express esta corriendo en http://localhost:${port}`);
