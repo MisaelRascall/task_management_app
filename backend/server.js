@@ -22,6 +22,10 @@
     const tasksRoutes = require("./routes/tasks");
     app.use("/tasks", tasksRoutes);
 
+    // Importando la ruta del status desde tareas
+    const statusRoutes = require("./routes/status");
+    app.use("/status", statusRoutes);
+
     // Levantando el servidor
     app.listen(port, () => {
       console.log(`El servidor Express esta corriendo en http://localhost:${port}`);
