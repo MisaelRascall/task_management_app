@@ -32,4 +32,34 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+// Actualizar status
+router.put("/:id", async (req, res) => {
+    const statusId = parseInt(req.params.id, 10);
+    const { estado } = req.body;
+
+    // console.log("ID recibido: ", statusId, " Estado recibido: ", estado);
+
+    // Valida que el estado este declarado dentro de la propiedad
+    if (!["Pendiente", "En proceso", "Terminada"].includes(estado)) {
+        return res.status(400).json({ error: "Estado inválido" });
+    }
+
+    try {
+        const conn = await getConnection();
+        const [result] = await conn.query(`
+            UPDATE tasks SET estado = ? WHERE id = ?`,
+        [estado, statusId]
+    );
+    await conn.end();
+
+    if (result.affectedRows > 0) {
+        res.json({ message: "Estado actualizado correctamente" });
+    } else {
+        res.status(400).json({ error: "Tarea no encontrada" });
+    }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router
