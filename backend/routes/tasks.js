@@ -96,6 +96,7 @@ router.put("/:id", async (req, res) => {
         const [result] = await conn.query(
             `UPDATE tasks SET titulo = ?, descripcion = ?, id_user = ?, fecha = ? WHERE id = ?`, [titulo, descripcion, id_user, fechaSQL, taskId]
         );
+        await conn.end();
 
         if (result.affectedRows > 0) {
             res.json({ id: req.params.id, titulo, descripcion, id_user, fecha });
