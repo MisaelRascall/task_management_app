@@ -1,0 +1,42 @@
+# ===== General =====
+.DS_Store
+Thumbs.db
+.env
+.env.local
+.env.*.local
+
+# ===== Node Backend =====
+backend/node_modules/
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/dist/
+backend/build/
+
+# ===== React Native =====
+# Dependencies
+frontend/node_modules/
+*.log
+
+# Android
+android/
+*.keystore
+*.jks
+*.iml
+*.apk
+*.aar
+
+# iOS
+ios/
+Pods/
+*.xcworkspace
+*.xcuserdatad
+*.xcuserdata
+DerivedData/
+
+# ===== Editor/IDE =====
+.vscode/
+.idea/
+
+# ===== System =====
+*.log
