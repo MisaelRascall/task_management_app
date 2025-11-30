@@ -1,33 +1,39 @@
 # ===== General =====
 .DS_Store
 Thumbs.db
+
+# ===== Environment Variables =====
 .env
 .env.local
 .env.*.local
 
-# ===== Node Backend =====
-backend/node_modules/
-backend/npm-debug.log*
-backend/yarn-debug.log*
-backend/yarn-error.log*
+# ===== Logs =====
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== Node.js =====
+node_modules/
+
+# Si quieres ignorar dist/build solo en backend:
 backend/dist/
 backend/build/
 
 # ===== React Native =====
 # Dependencies
 frontend/node_modules/
-*.log
 
 # Android
-android/
+frontend/android/
 *.keystore
 *.jks
-*.iml
 *.apk
 *.aar
+*.iml
 
 # iOS
-ios/
+frontend/ios/
 Pods/
 *.xcworkspace
 *.xcuserdatad
@@ -37,6 +43,3 @@ DerivedData/
 # ===== Editor/IDE =====
 .vscode/
 .idea/
-
-# ===== System =====
-*.log
