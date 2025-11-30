@@ -1,32 +1,34 @@
-    const express = require('express');
-    const app = express();
-    const port = 3001; // Puedes elegir otro puerto
+require("dotenv").config(); // Cargando variables de entorno
 
-    app.use(express.json()); // Para interpretar JSON en las solicitudes
+const express = require('express');
+const app = express();
+const port = process.env.DB_PORT;
 
-    // Ruta de prueba
-    app.get("/", (req, res) => {
-      res.send("API REST con Express funcionando 🚀")
-    });
+app.use(express.json()); // Para interpretar JSON en las solicitudes
 
-    // Define tu primera ruta de API
-    app.get('/api/saludo', (req, res) => {
-      res.json({ mensaje: '¡Hola desde el backend!' });
-    });
+// Ruta de prueba
+app.get("/", (req, res) => {
+  res.send("API REST con Express funcionando 🚀")
+});
 
-    // Importando las rutas de usuarios
-    const usersRoutes = require("./routes/users");
-    app.use("/users", usersRoutes);
+// Define tu primera ruta de API
+app.get('/api/saludo', (req, res) => {
+  res.json({ mensaje: '¡Hola desde el backend!' });
+});
 
-    // Importando las rutas de las tareas
-    const tasksRoutes = require("./routes/tasks");
-    app.use("/tasks", tasksRoutes);
+// Importando las rutas de usuarios
+const usersRoutes = require("./routes/users");
+app.use("/users", usersRoutes);
 
-    // Importando la ruta del status desde tareas
-    const statusRoutes = require("./routes/status");
-    app.use("/status", statusRoutes);
+// Importando las rutas de las tareas
+const tasksRoutes = require("./routes/tasks");
+app.use("/tasks", tasksRoutes);
 
-    // Levantando el servidor
-    app.listen(port, () => {
-      console.log(`El servidor Express esta corriendo en http://localhost:${port}`);
-    });
+// Importando la ruta del status desde tareas
+const statusRoutes = require("./routes/status");
+app.use("/status", statusRoutes);
+
+// Levantando el servidor
+app.listen(port, () => {
+  console.log(`El servidor Express esta corriendo en http://localhost:${port}`);
+});
