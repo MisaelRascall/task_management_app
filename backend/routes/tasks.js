@@ -15,19 +15,44 @@ router.get("/", async (req, res) => {
         await conn.end();
         res.json(rows);
     } catch (err) {
-        res.status(500).json({error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Nuevo endpoint — tareas para responsable por nombre
+router.get("/byUserName", async (req, res) => {
+    console.log("entrando al endpoint ByUserName");
+    const nombre = req.query.nombre;  // recibimos nombre por query string
+    if (!nombre) {
+        return res.status(400).json({ error: "Falta el parámetro 'nombre'" });
+    }
+
+    try {
+        const conn = await getConnection();
+        const [rows] = await conn.query(`
+      SELECT t.id, t.titulo, t.descripcion, t.estado,
+             DATE_FORMAT(t.fecha, '%d-%m-%Y') AS fecha,
+             u.nombre AS responsable
+      FROM tasks t
+      INNER JOIN users u ON t.id_user = u.id
+      WHERE u.nombre = ?`, [nombre]);
+        await conn.end();
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
 // Obtener una sola tarea
 router.get("/:id", async (req, res) => {
+    console.log("entrando al endpoint Tasks/id");
     const taskId = parseInt(req.params.id, 10);
 
     // console.log("ID recibido:", req.params.id, " -> convertido a número:", userId);
 
     // Valida si el ID es un número y no una letra
     if (isNaN(taskId)) {
-        return res.status(400).json({error: "ID inválido" });
+        return res.status(400).json({ error: "ID inválido" });
     }
 
     try {
@@ -41,7 +66,7 @@ router.get("/:id", async (req, res) => {
             WHERE t.id = ?`, [taskId]);
         await conn.end();
 
-        if (rows.length >0) {
+        if (rows.length > 0) {
             res.json(rows[0]);
         } else {
             res.status(404).json({ error: "Usuario no encontrado" });
@@ -55,17 +80,17 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     // console.log("Body recibido:", req.body);
 
-    const { titulo, descripcion, id_user, fecha} = req.body;
+    const { titulo, descripcion, id_user, fecha } = req.body;
 
     if (!titulo || !descripcion || !id_user || !fecha) {
-        return res.status(400).json({ error: "Faltan campos obligatorios"});
+        return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
     // Transformando el formato de fecha de "DD-MM-YYYY" a "YYYY-MM-DD"
-    const [dia, mes, anio] =fecha.split("-");
+    const [dia, mes, anio] = fecha.split("-");
     const fechaSQL = `${anio}-${mes}-${dia}`;
 
-    try{
+    try {
         const conn = await getConnection();
         const [result] = await conn.query(
             "INSERT INTO tasks (titulo, descripcion, id_user, fecha) VALUES (?, ?, ?, ?)", [titulo, descripcion, id_user, fechaSQL]
@@ -84,14 +109,14 @@ router.put("/:id", async (req, res) => {
     const { titulo, descripcion, id_user, fecha } = req.body;
 
     if (!titulo || !descripcion || !id_user || !fecha) {
-        return res.status(400).json({ error: "Faltan campos obligatorios"});
+        return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
     // Transformando el formato de fecha de "DD-MM-YYYY" a "YYYY-MM-DD"
-    const [dia, mes, anio] =fecha.split("-");
+    const [dia, mes, anio] = fecha.split("-");
     const fechaSQL = `${anio}-${mes}-${dia}`;
 
-    try{
+    try {
         const conn = await getConnection();
         const [result] = await conn.query(
             `UPDATE tasks SET titulo = ?, descripcion = ?, id_user = ?, fecha = ? WHERE id = ?`, [titulo, descripcion, id_user, fechaSQL, taskId]
@@ -117,7 +142,7 @@ router.delete("/:id", async (req, res) => {
 
     // Valido si el ID es un número
     if (isNaN(taskId)) {
-        return res.status(400).json({ error: "ID inválido"});
+        return res.status(400).json({ error: "ID inválido" });
     }
 
     try {
